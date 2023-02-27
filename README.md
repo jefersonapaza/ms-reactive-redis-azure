@@ -1,102 +1,56 @@
-# Quarkus demo: Redis
+# redis-quarkus
 
-This is a simple incrementing service using Redis command.
+This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
-While the code is surprisingly simple, under the hood this is using:
- - RESTEasy to expose the REST endpoints
- - A Redis database; see below to run one via Docker
- - ArC, the CDI inspired dependency injection tool with zero overhead
- 
-## Requirements
+If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
-To compile and run this demo you will need:
+## Running the application in dev mode
 
-- JDK 11+
-- GraalVM
+You can run your application in dev mode that enables live coding using:
+```shell script
+./mvnw compile quarkus:dev
+```
 
-In addition, you will need either a Redis database, or Docker to run one.
+> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
 
-### Configuring GraalVM and JDK 11+
+## Packaging and running the application
 
-Make sure that both the `GRAALVM_HOME` and `JAVA_HOME` environment variables have
-been set, and that a JDK 11+ `java` command is on the path.
+The application can be packaged using:
+```shell script
+./mvnw package
+```
+It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
+Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
-See the [Building a Native Executable guide](https://quarkus.io/guides/building-native-image)
-for help setting up your environment.
+The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
 
-## Building the demo
+If you want to build an _über-jar_, execute the following command:
+```shell script
+./mvnw package -Dquarkus.package.type=uber-jar
+```
 
-Launch the Maven build on the checked out sources of this demo:
+The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
-> ./mvnw package
+## Creating a native executable
 
-Note that running this command will start a Redis instance and run the tests.
+You can create a native executable using: 
+```shell script
+./mvnw package -Pnative
+```
 
-## Running the demo
+Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
+```shell script
+./mvnw package -Pnative -Dquarkus.native.container-build=true
+```
 
-### Prepare a Redis instance
+You can then execute your native executable with: `./target/redis-quarkus-1.0.0-SNAPSHOT-runner`
 
-Make sure you have a Redis instance running. To set up a Redis with Docker:
+If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
 
-> docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name redis_quarkus_test -p 6379:6379 redis:5.0.6
+## Provided Code
 
-Connection properties for the Redis connection are defined in the standard Quarkus configuration file,
-`src/main/resources/application.properties`.
+### RESTEasy Reactive
 
-### Live coding with Quarkus
+Easily start your Reactive RESTful Web Services
 
-The Maven Quarkus plugin provides a development mode that supports
-live coding. To try this out:
-
->  mvn quarkus:dev
-
-In this mode you can make changes to the code and have the changes immediately applied, by just making a http request to the service.
-
-### Run Quarkus in JVM mode
-
-When you're done iterating in developer mode, you can run the application as a
-conventional jar file.
-
-First compile it:
-
-> ./mvnw package
-
-Note that this command will start a Redis instance to execute the tests.
-Thus your Redis containers need to be stopped.
-
-Then run it:
-
-> java -jar ./target/quarkus-app/quarkus-run.jar
-
-    Have a look at how fast it boots.
-    Or measure total native memory consumption...
-
-### Run Quarkus as a native application
-
-You can also create a native executable from this application without making any
-source code changes. A native executable removes the dependency on the JVM:
-everything needed to run the application on the target platform is included in
-the executable, allowing the application to run with minimal resource overhead.
-
-Compiling a native executable takes a bit longer, as GraalVM performs additional
-steps to remove unnecessary codepaths. Use the  `native` profile to compile a
-native executable:
-
-> ./mvnw package -Dnative
-
-After getting a cup of coffee, you'll be able to run this binary directly:
-
-> ./target/redis-quickstart-1.0.0-SNAPSHOT-runner
-
-    Please brace yourself: don't choke on that fresh cup of coffee you just got.
-    
-    Now observe the time it took to boot, and remember: that time was mostly spent to generate the tables in your database and import the initial data.
-    
-    Next, maybe you're ready to measure how much memory this service is consuming.
-
-## Exposed endpoints
- - `GET /increments`
- - `GET /increments/{key}`
- - `DELETE /increments/{key}`
- - `POST /increments` accepting `{key:"key", value:int-value}`
- - `PUT /increments/{key}`  accepting an integer representing the increment value
+[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
